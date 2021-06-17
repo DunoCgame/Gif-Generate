@@ -1,0 +1,94 @@
+<html>
+	<head>
+		<title>Gif Generator</title>
+		<script src="b64.js"></script>
+		<script src="LZWEncoder.js"></script>
+		<script src="NeuQuant.js"></script>
+		<script src="GIFEncoder.js"></script>
+	</head>
+		<body>
+			<canvas id="canvas"></canvas>
+			<img id="image">
+			<button onclick="descarga()">Descarga</button>
+		</body>
+
+	<script>
+	let canvas = document.getElementById('canvas');
+	var context = canvas.getContext('2d');
+
+	let PosX = 0;
+	let PosY = 100;
+	let SpeedX = 5;
+	let SpeedY = 5; 
+	let Frame = 50;
+	function ClearArea(ctx){
+
+	ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+	function Paint(ctx){
+
+	ctx.save();
+	ctx.fillStyle = "green";
+	ctx.fillRect(0, 0, 1000, 800);
+	ctx.restore();
+				
+	ctx.save();
+	ctx.fillStyle = "#FF0000";
+	ctx.fillRect(PosX, PosY, 40, 40);
+	ctx.restore();
+		
+	PosX+=SpeedX;	
+	PosY+=SpeedY;	
+	
+		if(PosX<=0 || PosX+40>=canvas.width){
+					SpeedX*=-1;			
+							
+			}
+			if(PosY<=0 || PosY+40>=canvas.height){
+					SpeedY*=-1;			
+							
+			}
+
+}
+
+
+	canvas.width = 250;
+	canvas.height = 250;
+	context.fillStyle = "rgb(255,255,255)";  
+	context.fillRect(0,0,canvas.width, canvas.height); //GIF can't do transparent so do white
+
+
+	let encoder = new GIFEncoder();
+		encoder.setRepeat(0); //0  -> loop forever //1+ -> loop n times then stop
+		encoder.setDelay(1000);//go to next frame every n milliseconds "1000 is 1seg"
+		encoder.setSize(250,250); //size of imagen W y H
+		
+		encoder.start();
+		
+		<!-- Aqui se realiza la llamada -->
+		for(var i = 0; i < Frame; i++){
+			Main();
+		}
+			
+
+		function Main(){
+			 let ctx = context;
+			ClearArea(ctx);
+			Paint(ctx);
+			encoder.addFrame(ctx);
+	
+		}
+			
+		encoder.finish();
+		
+		function descarga(){
+			encoder.download("download.gif"); //
+		}
+	document.getElementById('image').src = 'data:image/gif;base64,'+encode64(encoder.stream().getData())
+
+	</script>
+
+</html>
+<!-- Document -->
+<!-- https://github.com/antimatter15/jsgif -->
