@@ -28,6 +28,15 @@
 				color:black;
 				font-size:30px;
 			}
+			
+			#canvas1{
+				border:3px solid red;
+				display:block;
+			}
+			#canvas2{
+				border:3px solid green;
+				display:none;
+			}
 		</style>
 	</head>
 		<body>
@@ -36,7 +45,8 @@
 		
 			</section class="area canvasG">
 				<label>Canvas</label>
-				<canvas id="canvas" class="MyCanvas"></canvas>
+				<canvas id="canvas1" class="MyCanvas"></canvas>
+				<canvas id="canvas2" class="MyCanvas"></canvas>
 			<section>
 			
 			<section class="area image">	
@@ -54,13 +64,19 @@
 
 	<script>
 	
-	let canvas = document.getElementById('canvas');
-	var context = canvas.getContext('2d');
+	let canvas1 = document.getElementById('canvas1');
+	var ctx = canvas1.getContext('2d');
 	
-	canvas.width = 250;
-	canvas.height = 250;
+
+	
+	
+	let canvas2 = document.getElementById('canvas2');
+	var context = canvas2.getContext('2d');
+	
+	canvas2.width = 250;
+	canvas2.height = 250;
 	context.fillStyle = "rgb(255,255,255)";  
-	context.fillRect(0,0,canvas.width, canvas.height); //GIF can't do transparent so do white
+	context.fillRect(0,0,canvas2.width, canvas2.height); //GIF can't do transparent so do white
 	
 
 	let PosX = 0;
@@ -74,7 +90,7 @@
 		
 	function ClearArea(ctx){
 
-		ctx.clearRect(0,0,canvas.width,canvas.height);
+		ctx.clearRect(0,0,canvas1.width,canvas1.height);
 	
 	}
 
@@ -93,20 +109,35 @@
 	PosX+=SpeedX;	
 	PosY+=SpeedY;	
 	
-		if(PosX<=0 || PosX+40>=canvas.width){
+		if(PosX<=0 || PosX+40>=canvas2.width){
 					SpeedX*=-1;			
 							
 			}
-			if(PosY<=0 || PosY+40>=canvas.height){
+			if(PosY<=0 || PosY+40>=canvas2.height){
 					SpeedY*=-1;			
 							
 			}
 
 	}
 
+	function Loop(){
+	
+		ClearArea(ctx);
+		Paint(ctx);
+	
+			setInterval(function(){
+				
+				Loop();
+
+			},1000);
+	}
+	Loop();
+
 
 	function GifGenerate(){
 
+canvas1.style.display="none";
+canvas2.style.display="block";
 
 		encoder.setRepeat(0); //0  -> loop forever //1+ -> loop n times then stop
 		encoder.setDelay(1000);//go to next frame every n milliseconds "1000 is 1seg"
@@ -147,8 +178,4 @@
 <!-- Document -->
 <!-- https://github.com/antimatter15/jsgif -->
 
-			<!-- setInterval(function(){ -->
-				
-				 <!-- console.log("Data"); -->
-					 <!-- Main(); -->
-			<!-- },1000); -->
+		
