@@ -5,26 +5,78 @@
 		<script src="LZWEncoder.js"></script>
 		<script src="NeuQuant.js"></script>
 		<script src="GIFEncoder.js"></script>
+		<style>
+			.containner{
+				display:flex;
+				flex-direction:row;
+				background:purple;
+				padding:9px;
+			}
+			.area{
+				border:2px solid black;
+				display:flex;
+				flex-direction:column;
+			}
+			.canvasG{
+				background:red;
+			}
+			.image{
+				background:blue;
+			}
+			
+			label{
+				color:black;
+				font-size:30px;
+			}
+		</style>
 	</head>
 		<body>
-			<canvas id="canvas"></canvas>
-			<img id="image">
+		
+		<div class="containner">
+		
+			</section class="area canvasG">
+				<label>Canvas</label>
+				<canvas id="canvas" class="MyCanvas"></canvas>
+			<section>
+			
+			<section class="area image">	
+				<label>Images</label>
+				<img id="image">
+			</section>
+			
+		</div>
+		
+			<hr>
+			
+			<button onclick="GifGenerate()">Gif</button>
 			<button onclick="descarga()">Descarga</button>
 		</body>
 
 	<script>
+	
 	let canvas = document.getElementById('canvas');
 	var context = canvas.getContext('2d');
+	
+	canvas.width = 250;
+	canvas.height = 250;
+	context.fillStyle = "rgb(255,255,255)";  
+	context.fillRect(0,0,canvas.width, canvas.height); //GIF can't do transparent so do white
+	
 
 	let PosX = 0;
 	let PosY = 100;
 	let SpeedX = 5;
 	let SpeedY = 5; 
 	let Frame = 50;
+	
+	let encoder = new GIFEncoder();
+		
+		
 	function ClearArea(ctx){
 
-	ctx.clearRect(0,0,canvas.width,canvas.height);
-}
+		ctx.clearRect(0,0,canvas.width,canvas.height);
+	
+	}
 
 	function Paint(ctx){
 
@@ -50,45 +102,53 @@
 							
 			}
 
-}
+	}
 
 
-	canvas.width = 250;
-	canvas.height = 250;
-	context.fillStyle = "rgb(255,255,255)";  
-	context.fillRect(0,0,canvas.width, canvas.height); //GIF can't do transparent so do white
+	function GifGenerate(){
 
 
-	let encoder = new GIFEncoder();
 		encoder.setRepeat(0); //0  -> loop forever //1+ -> loop n times then stop
 		encoder.setDelay(1000);//go to next frame every n milliseconds "1000 is 1seg"
-		encoder.setSize(250,250); //size of imagen W y H
-		
+		encoder.setSize(250,250); //size of imagen W y H		
 		encoder.start();
-		
+			
 		<!-- Aqui se realiza la llamada -->
 		for(var i = 0; i < Frame; i++){
-			Main();
+				Main();
 		}
-			
+					
+		encoder.finish();
+				
+		document.getElementById('image').src = 'data:image/gif;base64,'+encode64(encoder.stream().getData())
 
+		console.log("gif-Generate");
+
+	}
+	//Gif Generate
+
+		
 		function Main(){
-			 let ctx = context;
-			ClearArea(ctx);
-			Paint(ctx);
-			encoder.addFrame(ctx);
+				let ctx = context;
+				ClearArea(ctx);
+				Paint(ctx);
+				encoder.addFrame(ctx);
 	
 		}
-			
-		encoder.finish();
 		
 		function descarga(){
-			encoder.download("download.gif"); //
+				encoder.download("MyGif.gif"); 
 		}
-	document.getElementById('image').src = 'data:image/gif;base64,'+encode64(encoder.stream().getData())
-
+		
+		
 	</script>
 
 </html>
 <!-- Document -->
 <!-- https://github.com/antimatter15/jsgif -->
+
+			<!-- setInterval(function(){ -->
+				
+				 <!-- console.log("Data"); -->
+					 <!-- Main(); -->
+			<!-- },1000); -->
